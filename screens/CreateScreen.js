@@ -13,6 +13,7 @@ import { commonStyles } from "../styles/commonStyles";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { API, API_CREATE_POST } from "../hooks/useAPI";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function CreateScreen({ navigation }) {
   const [title, setTitle] = useState("");
@@ -24,6 +25,34 @@ export default function CreateScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const isDarkModeOn = useSelector((state) => state.prefs.darkMode);
+
+  //DateTime picker
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState("datetime");
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+    Keyboard.dismiss();
+  };
+
+  const toggleDatepicker = () => {
+    setShow(!show);
+  };
+  // const showMode = (currentMode) => {
+  //   setShow(true);
+  //   setMode(currentMode);
+  // };
+
+  // const showDatepicker = () => {
+  //   showMode("date");
+  // };
+
+  // const showTimepicker = () => {
+  //   showMode("time");
+  // };
 
   // Create posts to DB
   async function createPost(title, content, ntrp, location, mobile) {
@@ -138,13 +167,35 @@ export default function CreateScreen({ navigation }) {
           Date and Time{" "}
         </Text>
         <TextInput
-          placeholder="Suggest a date and time for a Game..."
-          style={styles.textInput}
-          value={content}
-          onChangeText={(input) => setContent(input)}
-          onTextInput={() => setErrorMessage("")}
-          autoCorrect={false}
-        ></TextInput>
+          // placeholder="Suggest a date and time for a Game..."
+          // style={styles.textInput}
+          // value={content}
+          // onChangeText={(input) => setContent(input)}
+          // onTextInput={() => setErrorMessage("")}
+          // autoCorrect={false}
+
+          style={styles.input}
+          placeholder="datetime"
+          onFocus={toggleDatepicker}
+          value={
+            date.getDate() +
+            "_" +
+            (date.getMonth() + 1) +
+            "_" +
+            date.getFullYear()
+          }
+        />
+
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={onChange}
+          />
+        )}
 
         <Text style={[styles.textLabel2, isDarkModeOn && { color: "white" }]}>
           NTRP rating
