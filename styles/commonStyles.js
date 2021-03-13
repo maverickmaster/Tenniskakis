@@ -8,4 +8,10 @@ export const commonStyles = {
     alignItems: "center",
     justifyContent: "center",
   },
+  container1: {
+    flex: 1,
+    backgroundColor: "lightgrey",
+    // alignItems: "center",
+    justifyContent: "center",
+  },
 };

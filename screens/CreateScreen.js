@@ -17,7 +17,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function CreateScreen({ navigation }) {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  // const [content, setContent] = useState("");
   const [ntrp, setNtrp] = useState("");
   const [location, setLocation] = useState("");
   const [mobile, setMobile] = useState("");
@@ -27,13 +27,13 @@ export default function CreateScreen({ navigation }) {
   const isDarkModeOn = useSelector((state) => state.prefs.darkMode);
 
   //DateTime picker
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [content, setDate] = useState(new Date(1609459200000));
   const [mode, setMode] = useState("datetime");
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(false);
+    const currentDate = selectedDate || content;
+    setShow(true);
     setDate(currentDate);
     Keyboard.dismiss();
   };
@@ -147,7 +147,7 @@ export default function CreateScreen({ navigation }) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
         style={[
-          commonStyles.container,
+          commonStyles.container1,
           isDarkModeOn && { backgroundColor: "black" },
         ]}
       >
@@ -174,22 +174,28 @@ export default function CreateScreen({ navigation }) {
           // onTextInput={() => setErrorMessage("")}
           // autoCorrect={false}
 
-          style={styles.input}
-          placeholder="datetime"
+          style={styles.textInput}
+          placeholder="Select a date and time for a Game..."
+          //placeholder="datetime"
           onFocus={toggleDatepicker}
-          value={
-            date.getDate() +
-            "_" +
-            (date.getMonth() + 1) +
-            "_" +
-            date.getFullYear()
-          }
+          //   value={
+          //     content.getDate() +
+          //     "-" +
+          //     (content.getMonth() + 1) +
+          //     "-" +
+          //     content.getFullYear() +
+          //     " ,    " +
+          //     content.getHours() +
+          //     ":" +
+          //     content.getMinutes()
+          //   }
         />
 
         {show && (
           <DateTimePicker
+            style={styles.textInput}
             testID="dateTimePicker"
-            value={date}
+            value={content}
             mode={mode}
             is24Hour={true}
             display="default"
@@ -276,11 +282,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 50,
     marginBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 30,
   },
   textLabel2: {
     fontSize: 15,
     fontWeight: "bold",
+    alignItems: "center",
     marginBottom: 10,
+    justifyContent: "center",
+    marginLeft: 30,
   },
   textInput: {
     margin: 20,
@@ -291,6 +303,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     justifyContent: "center",
     backgroundColor: "white",
+    alignItems: "center",
   },
   button: {
     width: 100,
