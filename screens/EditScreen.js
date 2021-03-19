@@ -13,10 +13,12 @@ import { commonStyles } from "../styles/commonStyles";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { API, API_POST_ID, API_EDIT_POST_ID } from "../hooks/useAPI";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import DeprecatedEdgeInsetsPropType from "react-native/Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType";
 
 export default function EditScreen({ navigation, route }) {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  //const [content, setContent] = useState("");
   const [ntrp, setNtrp] = useState("");
   const [location, setLocation] = useState("");
   const [mobile, setMobile] = useState("");
@@ -31,6 +33,22 @@ export default function EditScreen({ navigation, route }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const isDarkModeOn = useSelector((state) => state.prefs.darkMode);
+
+  //DateTime picker
+  const [content, setContent] = useState(new Date());
+  const [mode, setMode] = useState("datetime");
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || content;
+    setShow(true);
+    setContent(currentDate);
+    Keyboard.dismiss();
+  };
+
+  const toggleDatepicker = () => {
+    setShow(!show);
+  };
 
   // Start when loaded
   useEffect(() => {
@@ -52,7 +70,31 @@ export default function EditScreen({ navigation, route }) {
       console.log("Mobile: " + response.data.mobile);
 
       setTitle(response.data.title);
-      setContent(response.data.content);
+
+      let day = parseInt(response.data.content.split("-")[0]);
+      let month = response.data.content.split("-")[1]; // english
+      let year = parseInt(response.data.content.split("-")[2]);
+      let hour = parseInt(response.data.content.split(",   ")[1]);
+      let minutes = parseInt(response.data.content.split(":")[1]);
+      //const newContent = newDat(); // convert to dat eobject
+      const months = {
+        January: 0,
+        February: 1,
+        March: 2,
+        April: 3,
+        May: 4,
+        June: 5,
+        July: 6,
+        August: 7,
+        September: 8,
+        October: 9,
+        November: 10,
+        December: 11,
+      };
+      month = months[month]; // converting it to the index
+
+      const newContent = new Date(year, month, day, hour, minutes);
+      setContent(newContent);
       setNtrp(response.data.ntrp);
       setLocation(response.data.location);
       setMobile(response.data.mobile);
@@ -115,6 +157,39 @@ export default function EditScreen({ navigation, route }) {
       setErrorMessage("No changes made.");
       return;
     }
+    // Error check if Date entered
+    if (recContent == "") {
+      setErrorMessage("Please enter an available date for a Tennis Game.");
+      return;
+    } else {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      recContent =
+        recContent.getDate() +
+        "-" +
+        monthNames[recContent.getMonth()] +
+        "-" +
+        recContent.getFullYear() +
+        " ,    " +
+        recContent.getHours() +
+        ":" +
+        recContent.getMinutes();
+      //   }
+      console.log(recContent);
+    }
+
     // Edit post by ID
     editPostByID(recTitle, recContent, recNtrp, recLocation, recMobile, recID);
 
@@ -159,13 +234,40 @@ export default function EditScreen({ navigation, route }) {
           Date and Time
         </Text>
         <TextInput
-          placeholder="Suggest a date and time for a Game......"
-          style={styles.textInput}
-          value={content}
-          onChangeText={(input) => setContent(input)}
-          onTextInput={() => setErrorMessage("")}
-          autoCorrect={false}
-        ></TextInput>
+          // placeholder="Suggest a date and time for a Game......"
+          // style={styles.textInput}
+          // value={content}
+          // onChangeText={(input) => setContent(input)}
+          // onTextInput={() => setErrorMessage("")}
+          // autoCorrect={false}
+          style={[styles.textLabel2, isDarkModeOn && { color: "white" }]}
+          placeholder="[Click to select a date and time for a Game]"
+          //placeholder="datetime"
+          onFocus={toggleDatepicker}
+          //   value={
+          //     content.getDate() +
+          //     "-" +
+          //     (content.getMonth() + 1) +
+          //     "-" +
+          //     content.getFullYear() +
+          //     " ,    " +
+          //     content.getHours() +
+          //     ":" +
+          //     content.getMinutes()
+          // //   }
+        />
+
+        {show && (
+          <DateTimePicker
+            style={styles.textInput}
+            testID="dateTimePicker"
+            value={content}
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={onChange}
+          />
+        )}
 
         <Text style={[styles.textLabel2, isDarkModeOn && { color: "white" }]}>
           NTRP Rating{" "}

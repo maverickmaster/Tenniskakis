@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TextInput,
+  TextBox,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
@@ -27,14 +28,14 @@ export default function CreateScreen({ navigation }) {
   const isDarkModeOn = useSelector((state) => state.prefs.darkMode);
 
   //DateTime picker
-  const [content, setDate] = useState(new Date(1609459200000));
+  const [content, setContent] = useState(new Date(1609459200000));
   const [mode, setMode] = useState("datetime");
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || content;
     setShow(true);
-    setDate(currentDate);
+    setContent(currentDate);
     Keyboard.dismiss();
   };
 
@@ -98,6 +99,33 @@ export default function CreateScreen({ navigation }) {
     if (recContent == "") {
       setErrorMessage("Please enter an available date for a Tennis Game.");
       return;
+    } else {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      recContent =
+        recContent.getDate() +
+        "-" +
+        monthNames[recContent.getMonth()] +
+        "-" +
+        recContent.getFullYear() +
+        " ,    " +
+        recContent.getHours() +
+        ":" +
+        recContent.getMinutes();
+      //   }
+      console.log(recContent);
     }
     // Error check if Age entered
     if (recNtrp == "") {
@@ -115,6 +143,7 @@ export default function CreateScreen({ navigation }) {
       return;
     }
 
+    console.log(recContent);
     // Create post
     const didCreatePost = await createPost(
       recTitle,
@@ -174,8 +203,8 @@ export default function CreateScreen({ navigation }) {
           // onTextInput={() => setErrorMessage("")}
           // autoCorrect={false}
 
-          style={styles.textInput}
-          placeholder="Select a date and time for a Game..."
+          style={[styles.textLabel2, isDarkModeOn && { color: "white" }]}
+          placeholder="[Click to select a date and time for a Game]"
           //placeholder="datetime"
           onFocus={toggleDatepicker}
           //   value={
@@ -188,7 +217,7 @@ export default function CreateScreen({ navigation }) {
           //     content.getHours() +
           //     ":" +
           //     content.getMinutes()
-          //   }
+          // //   }
         />
 
         {show && (
@@ -305,6 +334,21 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+
+  textInput3: {
+    margin: 10,
+    borderWidth: 1,
+    width: "90%",
+    padding: 0,
+    borderColor: "#ccc",
+    marginTop: 0,
+    justifyContent: "center",
+    // backgroundColor: "white",
+    alignItems: "center",
+    marginLeft: 30,
+    color: "brown",
+  },
+
   button: {
     width: 100,
     height: 50,
